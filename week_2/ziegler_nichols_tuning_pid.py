@@ -231,30 +231,30 @@ if __name__ == '__main__':
     
     # TODO using simulate_with_given_pid_values() and perform_frequency_analysis() write you code to test different Kp values 
     # for each joint, bring the system to oscillation and compute the the PD parameters using the Ziegler-Nichols method
-    tune_kp_values_visual_analysis(sim, joint_id, regulation_displacement, init_gain, gain_step, max_gain, test_duration)   # Graph all the joint angles (measured vs desired)
-    
-    # useful_Kp = 16  # The Kp value that will be used for the Ziegler-Nichols method
-    # joint_data = simulate_with_given_pid_values(sim, useful_Kp, joint_id, regulation_displacement, test_duration, plot = False)  # Graph the joint angle for the specified joint at the specified Kp value
-    # joint_data = np.array(joint_data)[:, joint_id]
-    # time_step = sim.GetTimeStep()
-    # # Perform frequency analysis on the joint angle data
-    # dominant_frequency = perform_frequency_analysis(joint_data, time_step, plot = False)
+    #tune_kp_values_visual_analysis(sim, joint_id, regulation_displacement, init_gain, gain_step, max_gain, test_duration)   # Graph all the joint angles (measured vs desired)
 
-    # # Print the dominant frequency
-    # print(f"Dominant Frequency for Joint {joint_id}: {dominant_frequency} Hz")
+    useful_Kp = 16  # The Kp value that will be used for the Ziegler-Nichols method
+    joint_data = simulate_with_given_pid_values(sim, useful_Kp, joint_id, regulation_displacement, test_duration, plot = False)  # Graph the joint angle for the specified joint at the specified Kp value
+    joint_data = np.array(joint_data)[:, joint_id]
+    time_step = sim.GetTimeStep()
+    # Perform frequency analysis on the joint angle data
+    dominant_frequency = perform_frequency_analysis(joint_data, time_step, plot = True)
 
-    # # Calculate Ku and Tu
-    # ku = useful_Kp  # In this case, Ku is the same as the current Kp used to generate sustained oscillations
-    # tu = 1 / dominant_frequency  # Tu is the inverse of the dominant frequency
+    # Print the dominant frequency
+    print(f"Dominant Frequency for Joint {joint_id}: {dominant_frequency} Hz")
 
-    # # Calculate the values using Ziegler-Nichols method
-    # controller_type = "PD"  # Specify which controller to calculate values
-    # controller_values = calculate_zn_values(ku, tu, controller_type)
+    # Calculate Ku and Tu
+    ku = useful_Kp  # In this case, Ku is the same as the current Kp used to generate sustained oscillations
+    tu = 1 / dominant_frequency  # Tu is the inverse of the dominant frequency
 
-    # # Extract Kp, Ki, Kd values and provide default values for missing components
-    # kp = controller_values.get("Kp", 0)
-    # ki = controller_values.get("Ki", 0)
-    # kd = controller_values.get("Kd", 0)
+    # Calculate the values using Ziegler-Nichols method
+    controller_type = "PD"  # Specify which controller to calculate values
+    controller_values = calculate_zn_values(ku, tu, controller_type)
 
-    # # Run the simulation with the calculated PID values
-    # simulate_with_given_pid_values(sim, kp, joint_id, regulation_displacement, test_duration, kd, plot = True)
+    # Extract Kp, Ki, Kd values and provide default values for missing components
+    kp = controller_values.get("Kp", 0)
+    ki = controller_values.get("Ki", 0)
+    kd = controller_values.get("Kd", 0)
+
+    # Run the simulation with the calculated PID values
+    simulate_with_given_pid_values(sim, kp, joint_id, regulation_displacement, test_duration, kd, plot = True)
